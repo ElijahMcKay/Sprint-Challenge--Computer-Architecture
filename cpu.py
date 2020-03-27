@@ -20,7 +20,7 @@ class CPU:
 		self.pc = 0
 		self.register[7] = 0xF4
 		self.sp = 7
-		self.equal = {}
+		self.flags = {}
 		# Construct a branch table
 		self.branch_table = {}
 		self.branch_table[LDI] = self.ldi
@@ -28,6 +28,10 @@ class CPU:
 		self.branch_table[MUL] = self.mul
 		self.branch_table[PUSH] = self.push
 		self.branch_table[POP] = self.pop
+		self.branch_table[CMP] = self.cmp
+		self.branch_table[JMP] = self.jmp
+		self.branch_table[JEQ] = self.jeq
+		self.branch_table[JNE] = self.jne
 
 	# takes file input
 	def load(self):
@@ -50,9 +54,25 @@ class CPU:
 		b = self.register[reg_b]
 
 		if op == "ADD":
-			self.register[reg_a] += self.register[reg_b]
+			self.register[a] += self.register[b]
 		elif op == "MUL":
-			self.register[reg_a] *= self.register[reg_b]
+			self.register[a] *= self.register[b]
+		elif op == "CMP":
+			if a == b:
+				self.flags["E"] = 1
+			else:
+				self.flags["E"] = 0
+
+			if a < b:
+				self.flags["L"] = 1
+			else:
+				self.flags["L"] = 0
+
+			if a > b:
+				self.flags["G"] = 1
+			else:
+				self.flags["G"] = 0
+
 		else:
 			raise Exception("Unsupported ALU operation")
 
@@ -73,6 +93,15 @@ class CPU:
 
 	def cmp(self, operand_a, operand_b):
 		self.alu("CMP", operand_a, operand_b)
+
+	def jmp(self, operand_a, operand_b):
+		pass
+
+	def jeq(self, operand_a, operand_b):
+		pass
+
+	def jne(self, operand_a, operand_b):
+		pass
 
 	def push(self, operand_a, operand_b):
 		self.register[self.sp] -= 1
