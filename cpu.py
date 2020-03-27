@@ -8,6 +8,9 @@ MUL = 162
 PUSH = 69
 POP = 70
 CMP = 167
+JMP = 84
+JEQ = 85
+JNE = 86
 
 class CPU:
 	def __init__(self):
