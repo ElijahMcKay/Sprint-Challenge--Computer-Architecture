@@ -7,6 +7,7 @@ HLT = 1
 MUL = 162
 PUSH = 69
 POP = 70
+CMP = 167
 
 class CPU:
 	def __init__(self):
@@ -16,6 +17,7 @@ class CPU:
 		self.pc = 0
 		self.register[7] = 0xF4
 		self.sp = 7
+		self.equal = {}
 		# Construct a branch table
 		self.branch_table = {}
 		self.branch_table[LDI] = self.ldi
@@ -65,6 +67,9 @@ class CPU:
 
 	def mul(self, operand_a, operand_b):
 		self.alu("MUL", operand_a, operand_b)
+
+	def cmp(self, operand_a, operand_b):
+		self.alu("CMP", operand_a, operand_b)
 
 	def push(self, operand_a, operand_b):
 		self.register[self.sp] -= 1
