@@ -8,8 +8,11 @@ MUL = 162
 PUSH = 69
 POP = 70
 CMP = 167
+# unconditional jump
 JMP = 84
+# jump if equal
 JEQ = 85
+# jump if condition is met
 JNE = 86
 
 class CPU:
@@ -95,13 +98,19 @@ class CPU:
 		self.alu("CMP", operand_a, operand_b)
 
 	def jmp(self, operand_a, operand_b):
-		pass
+		self.pc = self.register[operand_a]
 
 	def jeq(self, operand_a, operand_b):
-		pass
+		if self.flags['E'] == 1:
+			self.pc = self.register[operand_a]
+		else:
+			self.pc += 2
 
 	def jne(self, operand_a, operand_b):
-		pass
+		if self.flags["E"] == 0:
+			self.pc = self.register[operand_a]
+		else:
+			self.pc += 2
 
 	def push(self, operand_a, operand_b):
 		self.register[self.sp] -= 1
@@ -115,8 +124,10 @@ class CPU:
 
 	def run(self):
 		"""Run The CPU"""
-
+		# end condition
 		halted = False
+		# add separate case in the instance of a jump related instruction
+		jump = [JNE, JMP, JEQ]
 
 		while not halted:
 			IR = self.read_ram(self.pc)
@@ -125,6 +136,9 @@ class CPU:
 
 			if IR == HLT:
 				halted = True
+			# need this extra block because the jump instructions increment the program pointer themselves
+			elif IR in jump:
+				self.branch_table[IR](operand_a, operand_b)
 			elif IR in self.branch_table:
 				self.branch_table[IR](operand_a, operand_b)
 				self.pc += (IR >> 6) + 1
